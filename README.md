@@ -18,6 +18,8 @@ F6 while the menu is open to reset the menus back to the starting location (guis
 
 on the recipe page at the bottom left there is a box you can use to resize the page
 
+to use translation edit Translations/RecipeListGUI_translations.txt and follow the instruction included in the file
+
 this is my first time really doing anything in C# im also just bad at coding so the performance of this is probably not great if anyone wants to help improve the mod feel free to make a pull request or contact me on discord rezx1
 
 https://www.nexusmods.com/schedule1/mods/215
