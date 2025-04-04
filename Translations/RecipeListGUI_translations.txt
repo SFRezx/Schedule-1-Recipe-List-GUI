@@ -1,0 +1,4 @@
+//Examples (DONT INCLUDE THE // FOR IT TO TAKE EFFECT)
+//Recipe=Todo List
+//All Products=All Drugs
+//Flu Medicine=Cold Medicine
