@@ -4,7 +4,7 @@ using Il2CppScheduleOne.StationFramework;
 using MelonLoader;
 using UnityEngine;
 using MelonLoader.Utils;
-[assembly: MelonInfo(typeof(RecipeListGui.RecipeListGuiClass), "Recipe List", "1.0.4", "Rezx, Community Updates By: ispa (Translation)")]
+[assembly: MelonInfo(typeof(RecipeListGui.RecipeListGuiClass), "Recipe List", "1.0.5", "Rezx, Community Updates By: ispa (Translation)")]
 
 namespace RecipeListGui
 {
@@ -442,7 +442,7 @@ namespace RecipeListGui
                 {
                     _shouldMinimizeProductListPage = false;
 
-                    _productListPageRect = new Rect(100, 20, 295, 300);
+                    _productListPageRect = new Rect(_productListPageRect.x, _productListPageRect.y, 295, 300);
                 }
                 GUI.DragWindow(new Rect(20, 10, 500, 500));
                 return;
@@ -453,7 +453,7 @@ namespace RecipeListGui
                 {
                     _shouldMinimizeProductListPage = true;
 
-                    _productListPageRect = new Rect(100, 20, 295, 55);
+                    _productListPageRect = new Rect(_productListPageRect.x, _productListPageRect.y, 295, 55);
                     return;
                 }
             }
@@ -566,7 +566,7 @@ namespace RecipeListGui
                 {
                     _shouldMinimizeFavListPage = false;
 
-                    _favsListPageRect = new Rect(100, 325, 295, 300);
+                    _favsListPageRect = new Rect(_productListPageRect.x, _productListPageRect.y, 295, 300);
                     return;
                 }
                 GUI.DragWindow(new Rect(20, 10, 500, 500));
@@ -579,7 +579,7 @@ namespace RecipeListGui
                 {
                     _shouldMinimizeFavListPage = true;
 
-                    _favsListPageRect = new Rect(100, 325, 295, 55);
+                    _favsListPageRect = new Rect(_favsListPageRect.x, _favsListPageRect.y, 295, 55);
                     return;
                 }
             }
