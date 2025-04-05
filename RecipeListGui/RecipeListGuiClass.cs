@@ -4,13 +4,51 @@ using Il2CppScheduleOne.StationFramework;
 using MelonLoader;
 using UnityEngine;
 using MelonLoader.Utils;
-[assembly: MelonInfo(typeof(RecipeListGui.RecipeListGuiClass), "Recipe List", "1.0.5", "Rezx, Community Updates By: ispa (Translation)")]
+[assembly: MelonInfo(typeof(RecipeListGui.RecipeListGuiClass), "Recipe List", "1.0.6", "Rezx, Community Updates By: ispa (Translation), pyst4r (effect colors)")]
 
 namespace RecipeListGui
 {
     public class RecipeListGuiClass : MelonMod
     {
-
+        private static Dictionary<string, string> effectColors = new()
+        {
+            { "Anti-Gravity", "#235BCD" },
+            { "Athletic", "#75C8FD" },
+            { "Balding", "#C79232" },
+            { "Bright-Eyed", "#BEF7FD" },
+            { "Calming", "#FED09B" },
+            { "Calorie-Dense", "#FE84F4" },
+            { "Cyclopean", "#FEC174" },
+            { "Disorienting", "#D16546" },
+            { "Electrifying", "#55C8FD" },
+            { "Energizing", "#9AFE6D" },
+            { "Euphoric", "#FEEA74" },
+            { "Explosive", "#FE4B40" },
+            { "Focused", "#75F1FD" },
+            { "Foggy", "#B0B0AF" },
+            { "Gingeritis", "#FE8829" },
+            { "Glowing", "#85E459" },
+            { "Jennerising", "#FE8DF8" },
+            { "Laxative", "#763C25" },
+            { "Lethal", "#AB2232" },
+            { "Long faced", "#FED961" },
+            { "Munchies", "#C96E57" },
+            { "Paranoia", "#C46762" },
+            { "Refreshing", "#B2FE98" },
+            { "Schizophrenic", "#645AFD" },
+            { "Sedating", "#6B5FD8" },
+            { "Seizure-Inducing", "#FEE900" },
+            { "Shrinking", "#B6FEDA" },
+            { "Slippery", "#A2DFFD" },
+            { "Smelly", "#7DBC31" },
+            { "Sneaky", "#7B7B7B" },
+            { "Spicy", "#FE6B4C" },
+            { "Thought-Provoking", "#FEA0CB" },
+            { "Toxic", "#5F9A31" },
+            { "Tropic Thunder", "#FE9F47" },
+            { "Zombifying", "#71AB5D" }
+        };
+        
         private class DataForFullIngredentsList
         {
             public string Name;
@@ -244,13 +282,17 @@ namespace RecipeListGui
                     string effects = "";
                     foreach (var effect in product.Properties)
                     {
-                        if (effects == "")
+                        
+                        string colorHex = effectColors.ContainsKey(effect.Name) ? effectColors[effect.Name] : "#FFFFFF";
+                        string coloredEffect = $"<b><color={colorHex}>{Translate(effect.Name)}</color></b>";
+
+                        if (string.IsNullOrEmpty(effects))
                         {
-                            effects = $"{Translate(effect.Name)}";
+                            effects = coloredEffect;
                         }
                         else
                         {
-                            effects = $"{effects}, {Translate(effect.Name)}";
+                            effects += $", {coloredEffect}";
                         }
                     }
                     outputLines.Add(effects);
@@ -293,8 +335,8 @@ namespace RecipeListGui
                         }
                         else
                         {
-                            outputLines.Add($"FAILEDx Ingredient: {ingredient.Item}");
-                            Melon<RecipeListGuiClass>.Logger.Msg($"ERROR ProcessProduct: Drug null {cat}");
+                            outputLines.Add($"{ingredient.Quantity} Ingredient: {ingredient.Item}");
+                            Melon<RecipeListGuiClass>.Logger.Msg($"ERROR ProcessProduct: prop null {cat}");
                         }
                     }
                     else if (cat == "Product")
@@ -303,16 +345,7 @@ namespace RecipeListGui
                         ProductDefinition drug = ingredient.Item.TryCast<ProductDefinition>();
                         if (drug != null)
                         {
-                            if (productManagerComp.DefaultKnownProducts.Contains(drug))
-                            {
-                                _costToMake += drug.BasePrice;
-                                outputLines.Add($"{ingredient.Quantity}x {Translate(drug.Name)}, {Translate("Seed")}: {drug.BasePrice}$");
-
-                            }
-                            else
-                            {
-                                outputLines.Add($"{ingredient.Quantity}x {Translate(drug.Name)}");
-                            }
+                            outputLines.Add($"{ingredient.Quantity}x {Translate(drug.Name)}");
                             // If this product has a recipe store it to process after all normal ingredients
                             if (drug.Recipes.Count >= 1)
                             {
