@@ -566,7 +566,7 @@ namespace RecipeListGui
                 {
                     _shouldMinimizeFavListPage = false;
 
-                    _favsListPageRect = new Rect(_productListPageRect.x, _productListPageRect.y, 295, 300);
+                    _favsListPageRect = new Rect(_favsListPageRect.x, _favsListPageRect.y, 295, 300);
                     return;
                 }
                 GUI.DragWindow(new Rect(20, 10, 500, 500));
