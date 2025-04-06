@@ -1,10 +1,10 @@
 # Schedule-1-Recipe-List-GUI
 
-this mod lets you easily find the recipes for products you have discovered or favorited
+Melon Loader is needed
 
 How To Use:
 
-Step 1.  load a save then open the pause menu with esc or open your phone so you get a mouse cursor
+Step 1. load a save then open the pause menu with esc or open your phone so you get a mouse cursor
 
 Step 2. press F5 to open them menu
 
@@ -15,6 +15,8 @@ Step 4. select drug type then find your product or select a product from the fav
 Step 5. sometimes the product you have selected has more then 1 recipe so you will be asked to select what recipe you want
 
 F6 while the menu is open to reset the menus back to the starting location (guis can go off screen)
+
+if you want to edit keybinds, menu scale, menu transparency, and menu color edit Mods\RecipeGUI.cfg
 
 on the recipe page at the bottom left there is a box you can use to resize the page
 
