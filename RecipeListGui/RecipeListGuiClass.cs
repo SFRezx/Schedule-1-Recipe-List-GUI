@@ -4,7 +4,7 @@ using Il2CppScheduleOne.StationFramework;
 using MelonLoader;
 using UnityEngine;
 using MelonLoader.Utils;
-[assembly: MelonInfo(typeof(RecipeListGui.RecipeListGuiClass), "Recipe List", "1.0.6", "Rezx, Community Updates By: ispa (Translation), pyst4r (effect colors)")]
+[assembly: MelonInfo(typeof(RecipeListGui.RecipeListGuiClass), "Recipe List", "1.0.7", "Rezx, Community Updates By: ispa (Translation), pyst4r (effect colors)")]
 
 namespace RecipeListGui
 {
@@ -48,6 +48,7 @@ namespace RecipeListGui
             { "Tropic Thunder", "#FE9F47" },
             { "Zombifying", "#71AB5D" }
         };
+        
         
         private class DataForFullIngredentsList
         {
@@ -126,21 +127,36 @@ namespace RecipeListGui
             }
         }
         
-
+        
+        private static MelonPreferences_Entry<float> _guiScale;
+        private static MelonPreferences_Entry<KeyCode> _toggleKeyCode;
+        private static MelonPreferences_Entry<KeyCode> _resetKeyCode;
+        private static MelonPreferences_Entry<float> _transparency;
+        private static MelonPreferences_Entry<Color> _pageColor;
         public override void OnInitializeMelon()
         {
+
             LoadTranslations();
-            Melon<RecipeListGuiClass>.Logger.Msg("F5 to open");
-            Melon<RecipeListGuiClass>.Logger.Msg("press F6 while gui is open to reset gui location");
+            MelonPreferences_Category melonCfgCategory = MelonPreferences.CreateCategory("RecipeListGUI");
+            _guiScale = melonCfgCategory.CreateEntry<float>("GUI_Scale", 1f);
+            _toggleKeyCode = melonCfgCategory.CreateEntry<KeyCode>("Open_And_Close_Button", KeyCode.F5);
+            _resetKeyCode = melonCfgCategory.CreateEntry<KeyCode>("Reset_Button", KeyCode.F6);
+            _transparency = melonCfgCategory.CreateEntry<float>("Transparency", 0.56f);
+            _pageColor = melonCfgCategory.CreateEntry<Color>("Page_Color", Color.gray);
+            melonCfgCategory.SetFilePath( Path.Combine(MelonEnvironment.GameRootDirectory, "Mods", "RecipeGUI.cfg"));
+            melonCfgCategory.SaveToFile();
+            
+            Melon<RecipeListGuiClass>.Logger.Msg($"{_toggleKeyCode.Value} to open");
+            Melon<RecipeListGuiClass>.Logger.Msg($"{_resetKeyCode.Value} while gui is open to reset gui location");
         }
 
         public override void OnLateUpdate()
         {
-            if (Input.GetKeyDown(KeyCode.F5))
+            if (Input.GetKeyDown(_toggleKeyCode.Value))
             {
                 ToggleMenu();
             }
-            if (Input.GetKeyDown(KeyCode.F6) && _guiShowen)
+            if (Input.GetKeyDown(_resetKeyCode.Value) && _guiShowen)
             {
                 MelonLogger.Msg("F6 pressed reset gui location");
                 _productListPageRect = new Rect(100, 20, 295, 300);
@@ -170,9 +186,11 @@ namespace RecipeListGui
 
         private static void DrawPages()
         {
-
+            Color pageColor = _pageColor.Value;
+            float guiScale = _guiScale.Value;
+            GUI.matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(guiScale, guiScale, 1));
             Texture2D transparentTex = new Texture2D(1, 1);
-            transparentTex.SetPixel(0, 0, new Color(Color.gray.r, Color.gray.g, Color.gray.b, 0.56f));
+            transparentTex.SetPixel(0, 0, new Color(pageColor.r, pageColor.g, pageColor.b, _transparency.Value));
             transparentTex.Apply();
 
             GUIStyle customWindowStyle = new GUIStyle(GUI.skin.window);
@@ -331,6 +349,10 @@ namespace RecipeListGui
                             }
 
                             _costToMake += prop.BasePurchasePrice * ingredient.Quantity;
+                            if (!ingredientIcons.ContainsKey(prop.Name))
+                            {
+                                ingredientIcons.Add(prop.Name,prop.Icon);
+                            }
 
                         }
                         else
@@ -380,6 +402,8 @@ namespace RecipeListGui
         private static bool _hasSelectedProductRecipe;
         private static int _selectedProductRecipeIndex;
         private static ProductDefinition _lastSelectedBud;
+        private static Dictionary<string, Sprite> ingredientIcons = new();
+
         static void RecipePage(int windowId)
         {
             Rect resizeHandleRect = new Rect(_recipeResultPageRect.width - 50, _recipeResultPageRect.height - 50, 25, 25);
@@ -440,21 +464,49 @@ namespace RecipeListGui
 
                 _recipeResultPageScrollViewVector = GUI.BeginScrollView(new Rect(55, 20, _recipeResultPageRect.width - 55, _recipeResultPageRect.height), _recipeResultPageScrollViewVector, new Rect(0, 0, _recipeResultPageRect.width - 55, _ingredientListRecipePage.Count * 30));
 
-                // make lables with the info from GetIngredientList
                 var ingredientListTemp = _ingredientListRecipePage.ToArray().ToList();
+                
+                // make lables with the info from GetIngredientList
                 for (int i = 0; i < _ingredientListRecipePage.Count; i++)
                 {
-                    GUI.Label(new Rect(10, 40 + (20 * i), _recipeResultPageRect.width - 75, 20), ingredientListTemp[i]);
+                    
+                    string currentingredient = ingredientListTemp[i];
+                    if (!currentingredient.StartsWith(" ") && !currentingredient.StartsWith("Price") && !currentingredient.StartsWith("Recipe") && !currentingredient.StartsWith("----"))
+                    {
+                        string[] currentingredientSplit = currentingredient.Split(' ');
+                        string ingredientFromSplit = "";
+                        string lastWord = currentingredientSplit.Last();
+                        
+                        if (lastWord.Contains("$")) // remove the ingredient quantity from the start and price from end then rebuild string
+                        {
+                            ingredientFromSplit = string.Join(" ", currentingredientSplit.Skip(1).Take(currentingredientSplit.Length - 2));
+                        }
+                        else // remove the ingredient quantity from the start then rebuild string
+                        {
+                            ingredientFromSplit = string.Join(" ", currentingredientSplit.Skip(1));
+                        }
+
+                        ingredientFromSplit = ingredientFromSplit.Trim();
+                        
+
+                        Sprite icon = ingredientIcons.ContainsKey(ingredientFromSplit) ? ingredientIcons[ingredientFromSplit] : null;
+                        if (icon != null)
+                        {
+                            GUI.DrawTexture(new Rect(8, 40 + (20 * i), 35, 22), icon.texture);
+                        }
+                    }
+
+
+                    GUI.Label(new Rect(50, 40 + (20 * i), _recipeResultPageRect.width - 75, 20), ingredientListTemp[i]);
                 }
                 GUI.EndScrollView();
             }
-
-
+            
             // resize
             ProcessResize(resizeHandleRect);
             GUI.DragWindow(new Rect(0, 0, _recipeResultPageRect.width, _recipeResultPageRect.height - 30));
         }
-
+        
 
         private static Vector2 _productListPageScrollViewVector = Vector2.zero;
         private static Rect _productListPageRect = new Rect(100, 20, 295, 55);
@@ -465,7 +517,8 @@ namespace RecipeListGui
         private static ProductDefinition _selectedBud;
         private static bool _shouldMinimizeProductListPage = true;
         private static bool _sortProductListPageByPrice = false;
-
+        
+        
         static void ProductListPage(int windowID)
         {
 
