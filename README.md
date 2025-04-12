@@ -25,4 +25,5 @@ to use translation edit Translations/RecipeListGUI_translations.txt and follow t
 this is my first time really doing anything in C# im also just bad at coding so the performance of this is probably not great if anyone wants to help improve the mod feel free to make a pull request or contact me on discord rezx1
 
 https://www.nexusmods.com/schedule1/mods/215
+
 https://thunderstore.io/c/schedule-i/p/SFR/Recipe_List_Menu
