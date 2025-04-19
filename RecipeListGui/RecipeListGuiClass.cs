@@ -4,7 +4,7 @@ using Il2CppScheduleOne.StationFramework;
 using MelonLoader;
 using UnityEngine;
 using MelonLoader.Utils;
-[assembly: MelonInfo(typeof(RecipeListGui.RecipeListGuiClass), "Recipe List", "1.0.8", "Rezx, Community Updates By: ispa (Translation), pyst4r (effect colors)")]
+[assembly: MelonInfo(typeof(RecipeListGui.RecipeListGuiClass), "Recipe List", "1.0.9", "Rezx, Community Updates By: ispa (Translation), pyst4r (effect colors)")]
 
 namespace RecipeListGui
 {
@@ -159,20 +159,13 @@ namespace RecipeListGui
             if (Input.GetKeyDown(_resetKeyCode.Value) && _guiShowen)
             {
                 MelonLogger.Msg("F6 pressed reset gui location");
-                if (_shouldShowDetailedView)
-                {
-                    _productListPageRect = new Rect(100, 20, 400, 300);
-                }
-                else
-                {
-                    _productListPageRect = new Rect(100, 20, 295, 300);
-                }
+                _productListPageRect = new Rect(100, 20, _productListPageRect.width, _productListPageRect.height);
+                
                 _shouldMinimizeProductListPage = false;
-                _favsListPageRect = new Rect(100, 325, 295, 300);
+                _favsListPageRect = new Rect(100, 325, _favsListPageRect.width, _favsListPageRect.height);
                 _shouldMinimizeFavListPage = false;
-                _recipeResultPageRect = new Rect(600, 20, 600, 600);
+                _recipeResultPageRect = new Rect(600, 20, _recipeResultPageRect.width, _recipeResultPageRect.height);
                 _settingsPageRect = new Rect(1000, 20, _settingsPageRect.width, _settingsPageRect.height);
-
             }
         }
 
@@ -206,8 +199,6 @@ namespace RecipeListGui
             customWindowStyle.normal.textColor = Color.white;
             customWindowStyle.normal.background = transparentTex;
             customWindowStyle.onNormal.background = transparentTex;
-            //customWindowStyle.onHover.background = transparentTex;
-            
 
             _productListPageRect = GUI.Window(651, _productListPageRect, (GUI.WindowFunction)ProductListPage, Translate("Product List"), customWindowStyle);
             _favsListPageRect = GUI.Window(652, _favsListPageRect, (GUI.WindowFunction)FavListPage, Translate("Favorite List"), customWindowStyle);
@@ -221,7 +212,7 @@ namespace RecipeListGui
 
         }
         
-                private static Rect _settingsPageRect = new Rect(1000, 20, 250, 55);
+        private static Rect _settingsPageRect = new Rect(1000, 20, 250, 55);
         private static bool _shouldMinimizeSettingsPage = true;
 
 
@@ -299,6 +290,7 @@ namespace RecipeListGui
                 //Printy("ProductManager component not found");
                 return null;
             }
+            
             return productManagerComp.AllProducts;
         }
 
@@ -615,7 +607,7 @@ namespace RecipeListGui
                 {
                     _shouldMinimizeProductListPage = false;
 
-                    _productListPageRect = new Rect(_productListPageRect.x, _productListPageRect.y, 295, 300);
+                    _productListPageRect = new Rect(_productListPageRect.x, _productListPageRect.y, _productListPageRect.width, 300);
                 }
                 GUI.DragWindow(new Rect(20, 10, 500, 500));
                 return;
@@ -746,7 +738,7 @@ namespace RecipeListGui
 
                 foreach (var detailedProduct in sortedProducts)
                 {
-                    if (GUI.Button(new Rect(-10, 20 * spacer, 160, 20), Translate(detailedProduct.Product.Name)))
+                    if (GUI.Button(new Rect(20, 20 * spacer, 160, 20), Translate(detailedProduct.Product.Name)))
                     {
                         _selectedBud = detailedProduct.Product;
                         _hasSelectedBud = true;
@@ -754,8 +746,11 @@ namespace RecipeListGui
                         _hasSelectedProductRecipe = false;
                         _selectedProductRecipeIndex = 0;
                     }
-
-                    GUI.Label(new Rect(155, 20 * spacer, _productListPageRect.width-10, 20), $"{Translate("Profit")}: <b><color=#3ebf05>{detailedProduct.Product.MarketValue - detailedProduct.CostToMake}</color></b>  {Translate("Ingredients")}: <b><color=#ff3737>{detailedProduct.IngredientsNeededForCraft}</color></b> ");
+                    if (GUI.Button(new Rect(0, 20 * spacer, 22, 20), "F"))
+                    {
+                        SetProductFav(detailedProduct.Product.ID,true);
+                    }
+                    GUI.Label(new Rect(185, 20 * spacer, _productListPageRect.width-10, 20), $"{Translate("Profit")}: <b><color=#3ebf05>{detailedProduct.Product.MarketValue - detailedProduct.CostToMake}</color></b>  {Translate("Ingredients")}: <b><color=#ff3737>{detailedProduct.IngredientsNeededForCraft}</color></b> ");
                     spacer++;
                 }
             }
@@ -788,7 +783,6 @@ namespace RecipeListGui
                         _selectedProductRecipeIndex = 0;
                     }
                     GUI.Label(new Rect(165, 20 * spacer, _productListPageRect.width-10, 20), $"<b><color=#3ebf05>{createdProduct.MarketValue}</color></b>$");
-
                     spacer++;
                 }
             }
@@ -796,8 +790,6 @@ namespace RecipeListGui
             GUI.EndScrollView();
             GUI.DragWindow(new Rect(20, 10, 500, 500));
         }
-        
-        
         private class DetailedProduct
         {
             public ProductDefinition Product; 
@@ -885,8 +877,9 @@ namespace RecipeListGui
             }
         }
 
+        
         private static Vector2 _favsListPageScrollViewVector = Vector2.zero;
-        private static Rect _favsListPageRect = new Rect(100, 325, 295, 55);
+        private static Rect _favsListPageRect = new Rect(100, 325, 300, 55);
         private static Il2CppSystem.Collections.Generic.List<ProductDefinition>? _listOf_FavsProducts;
         private static bool _shouldMinimizeFavListPage = true;
         private static bool _sortFavListPageByPrice = false;
@@ -918,7 +911,7 @@ namespace RecipeListGui
                 }
             }
             // filter button
-            if (GUI.Button(new Rect(_favsListPageRect.width - 37, 20, 29, 27), "$"))
+            if (GUI.Button(new Rect(_favsListPageRect.width - 37, 20, 29, 27), _sortFavListPageByPrice ? "<b><color=#3ebf05>$</color></b>" : "$"))
             {
                 _sortFavListPageByPrice = !_sortFavListPageByPrice;
                 _favsListPageScrollViewVector = Vector2.zero;
@@ -939,12 +932,12 @@ namespace RecipeListGui
                 filteredFavProducts = filteredFavProducts.OrderByDescending(product => product.MarketValue).ToList();
             }
 
-            _favsListPageScrollViewVector = GUI.BeginScrollView(new Rect(55, 20, 300, 300), _favsListPageScrollViewVector, new Rect(0, 0, 300, filteredFavProducts.Count * 20 + 10));
+            _favsListPageScrollViewVector = GUI.BeginScrollView(new Rect(10, 20, 300, 300), _favsListPageScrollViewVector, new Rect(0, 0, 300, filteredFavProducts.Count * 20 + 10));
 
             int spacer = 0;
             foreach (var favProduct in filteredFavProducts)
             {
-                if (GUI.Button(new Rect(0, 20 * spacer, 160, 20), Translate(favProduct.name)))
+                if (GUI.Button(new Rect(45, 20 * spacer, 160, 20), Translate(favProduct.name)))
                 {
                     //Printy($"Selected Fav: {favProduct.name}");
                     _selectedBud = favProduct;
@@ -953,9 +946,12 @@ namespace RecipeListGui
                     _hasSelectedProductRecipe = false;
                     _selectedProductRecipeIndex = 0;
                 }
-
+                if (GUI.Button(new Rect(25, 20 * spacer, 22, 20), "X"))
+                {
+                    SetProductFav(favProduct.ID,false);
+                }
                 // draw price lable
-                GUI.Label(new Rect(165, 20 * spacer, 50, 20), $"<b><color=#3ebf05>{favProduct.MarketValue}</color></b>$");
+                GUI.Label(new Rect(209, 20 * spacer, 50, 20), $"<b><color=#3ebf05>{favProduct.MarketValue}</color></b>$");
 
                 spacer++;
             }
@@ -964,6 +960,22 @@ namespace RecipeListGui
         }
 
 
+        static void SetProductFav(string id,bool doFavorite)
+        {
+            GameObject productObject = GameObject.Find("@Product");
+            if (productObject == null)
+            {
+                return;
+            }
+            ProductManager productManagerComp = productObject.GetComponent<ProductManager>();
+            if (productManagerComp == null)
+            {
+                return;
+            }
+            productManagerComp.SetProductFavourited(id,doFavorite);
+        }
+        
+        
         // ProcessResize was ai generated because 2 brain cells
         private static bool _isResizing;
         private static Vector2 _initialMousePosition;
