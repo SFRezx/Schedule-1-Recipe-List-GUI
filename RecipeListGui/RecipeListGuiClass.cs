@@ -61,11 +61,11 @@ namespace RecipeListGui
 
         private static string Translate(string englishText)
         {
-            if (string.IsNullOrEmpty(englishText))
-                return englishText;
-
-            if (_translationDictionary.TryGetValue(englishText, out string translation))
-                return translation;
+            if (!string.IsNullOrEmpty(englishText))
+            {
+                if (_translationDictionary.TryGetValue(englishText, out string translation))
+                    return translation;
+            }
 
             return englishText; //return the original text if the translation is not found
         }
