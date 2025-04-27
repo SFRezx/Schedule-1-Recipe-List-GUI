@@ -1,6 +1,6 @@
 # Schedule 1 Recipe List GUI
 
-*Melon Loader is required*
+**Melon Loader is required**
 
 **How To Use:**
 
