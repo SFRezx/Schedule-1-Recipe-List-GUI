@@ -4,7 +4,7 @@ using Il2CppScheduleOne.StationFramework;
 using MelonLoader;
 using UnityEngine;
 using MelonLoader.Utils;
-[assembly: MelonInfo(typeof(RecipeListGui.RecipeListGuiClass), "Recipe List", "1.0.9", "Rezx, Community Updates By: ispa (Translation), pyst4r (effect colors)")]
+[assembly: MelonInfo(typeof(RecipeListGui.RecipeListGuiClass), "Recipe List", "1.1.0", "Rezx, Community Updates By: ispa (Translation), pyst4r (effect colors)")]
 
 namespace RecipeListGui
 {
@@ -66,7 +66,7 @@ namespace RecipeListGui
                 if (_translationDictionary.TryGetValue(englishText, out string translation))
                     return translation;
             }
-
+            
             return englishText; //return the original text if the translation is not found
         }
 
@@ -158,12 +158,9 @@ namespace RecipeListGui
             }
             if (Input.GetKeyDown(_resetKeyCode.Value) && _guiShowen)
             {
-                MelonLogger.Msg("F6 pressed reset gui location");
+                MelonLogger.Msg("Reset button pressed gui location reset");
                 _productListPageRect = new Rect(100, 20, _productListPageRect.width, _productListPageRect.height);
-                
-                _shouldMinimizeProductListPage = false;
                 _favsListPageRect = new Rect(100, 325, _favsListPageRect.width, _favsListPageRect.height);
-                _shouldMinimizeFavListPage = false;
                 _recipeResultPageRect = new Rect(600, 20, _recipeResultPageRect.width, _recipeResultPageRect.height);
                 _settingsPageRect = new Rect(1000, 20, _settingsPageRect.width, _settingsPageRect.height);
             }
@@ -177,11 +174,15 @@ namespace RecipeListGui
             if (_guiShowen)
             {
                 MelonEvents.OnGUI.Subscribe(DrawPages, 50);
+                MelonLogger.Msg("GUI Enabled");
+
             }
             else
             {
                 _listOfCreatedProducts = null;
                 MelonEvents.OnGUI.Unsubscribe(DrawPages);
+                MelonLogger.Msg("GUI Disabled");
+
             }
         }
 
@@ -205,7 +206,7 @@ namespace RecipeListGui
             if (_hasSelectedBud)
             {
                 _recipeResultPageRect = GUI.Window(653, _recipeResultPageRect, (GUI.WindowFunction)RecipePage, Translate("Recipe"), customWindowStyle);
-            }
+            }   
 
             _settingsPageRect = GUI.Window(654, _settingsPageRect, (GUI.WindowFunction)SettingsPage, Translate("Settings"), customWindowStyle);
 
