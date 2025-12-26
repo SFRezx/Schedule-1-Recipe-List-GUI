@@ -1,10 +1,11 @@
+using Il2CppScheduleOne.Effects;
 using Il2CppScheduleOne.ItemFramework;
 using Il2CppScheduleOne.Product;
 using Il2CppScheduleOne.StationFramework;
 using MelonLoader;
 using UnityEngine;
 using MelonLoader.Utils;
-[assembly: MelonInfo(typeof(RecipeListGui.RecipeListGuiClass), "Recipe List", "1.1.0", "Rezx, Community Updates By: ispa (Translation), pyst4r (effect colors)")]
+[assembly: MelonInfo(typeof(RecipeListGui.RecipeListGuiClass), "Recipe List", "1.1.1", "Rezx, Community Updates By: ispa (Translation), pyst4r (effect colors)")]
 
 namespace RecipeListGui
 {
@@ -373,7 +374,7 @@ namespace RecipeListGui
                 {
                     outputLines.Add($"{Translate("Recipe for")} <b>{Translate(recipe.RecipeTitle)}</b>");
                     string effects = "";
-                    foreach (var effect in product.Properties)
+                    foreach (Effect effect in product.Properties)
                     {
                         
                         string colorHex = effectColors.ContainsKey(effect.Name) ? effectColors[effect.Name] : "#FFFFFF";
