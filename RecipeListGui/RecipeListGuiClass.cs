@@ -5,7 +5,7 @@ using Il2CppScheduleOne.StationFramework;
 using MelonLoader;
 using UnityEngine;
 using MelonLoader.Utils;
-[assembly: MelonInfo(typeof(RecipeListGui.RecipeListGuiClass), "Recipe List", "1.1.1", "Rezx, Community Updates By: ispa (Translation), pyst4r (effect colors)")]
+[assembly: MelonInfo(typeof(RecipeListGui.RecipeListGuiClass), "Recipe List", "1.1.2", "Rezx, Community Updates By: ispa (Translation), pyst4r (effect colors)")]
 
 namespace RecipeListGui
 {
@@ -649,10 +649,16 @@ namespace RecipeListGui
                     _hasSelectedProductType = true;
                     _typeOfDrugToFilter = "Cocaine";
                 }
-                if (GUI.Button(new Rect(50, 80, 200, 20), Translate("All Products")))
+                if (GUI.Button(new Rect(50, 80, 200, 20), Translate("Shrooms")))
+                {
+                    _hasSelectedProductType = true;
+                    _typeOfDrugToFilter = "Shrooms";
+                }
+                if (GUI.Button(new Rect(50, 100, 200, 20), Translate("All Products")))
                 {
                     _hasSelectedProductType = true;
                 }
+                
 
                 GUI.DragWindow(new Rect(40, 10, 500, 500));
 
