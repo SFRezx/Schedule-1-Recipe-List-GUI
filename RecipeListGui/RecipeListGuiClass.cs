@@ -5,7 +5,7 @@ using Il2CppScheduleOne.StationFramework;
 using MelonLoader;
 using UnityEngine;
 using MelonLoader.Utils;
-[assembly: MelonInfo(typeof(RecipeListGui.RecipeListGuiClass), "Recipe List", "1.1.2", "Rezx, Community Updates By: ispa (Translation), pyst4r (effect colors)")]
+[assembly: MelonInfo(typeof(RecipeListGui.RecipeListGuiClass), "Recipe List", "1.1.3", "Rezx, Community Updates By: ispa (Translation), pyst4r (effect colors)")]
 
 namespace RecipeListGui
 {
@@ -328,7 +328,7 @@ namespace RecipeListGui
             ProcessProduct(product, outputLines, selectedProductRecipe, true, ingredientListTemp);
 
             outputLines.Add("-----------------------------------------------------------------------------------");
-            outputLines.Add($"{Translate("Market Price")} <b><color=#3ebf05>{product.MarketValue}</color></b>, {Translate("Addictiv")}: {Math.Round(product.GetAddictiveness())}, {Translate("Cost")}: <b><color=#ff3737>{_costToMake}</color></b>, {Translate("After Cost")}: <b><color=#3ebf05>{product.MarketValue - _costToMake}</color></b> ({Translate("base ingredients not included")})");
+            outputLines.Add($"{Translate("Market Price")} <b><color=#3ebf05>{product.MarketValue}</color></b>, {Translate("Addictiv")}: {Math.Round(product.GetAddictiveness()*100)}, {Translate("Cost")}: <b><color=#ff3737>{_costToMake}</color></b>, {Translate("After Cost")}: <b><color=#3ebf05>{product.MarketValue - _costToMake}</color></b> ({Translate("base ingredients not included")})");
             outputLines.Add("-----------------------------------------------------------------------------------");
 
             foreach (var ingredient in ingredientListTemp)
