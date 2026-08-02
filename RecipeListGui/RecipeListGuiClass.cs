@@ -5,7 +5,7 @@ using Il2CppScheduleOne.StationFramework;
 using MelonLoader;
 using UnityEngine;
 using MelonLoader.Utils;
-[assembly: MelonInfo(typeof(RecipeListGui.RecipeListGuiClass), "Recipe List", "1.1.3", "Rezx, Community Updates By: ispa (Translation), pyst4r (effect colors)")]
+[assembly: MelonInfo(typeof(RecipeListGui.RecipeListGuiClass), "Recipe List", "1.1.5", "Rezx, Community Updates By: ispa (Translation), pyst4r (effect colors)")]
 
 namespace RecipeListGui
 {
@@ -186,7 +186,6 @@ namespace RecipeListGui
 
             }
         }
-
 
         private static void DrawPages()
         {
@@ -429,9 +428,10 @@ namespace RecipeListGui
                             _costToMake += prop.BasePurchasePrice * ingredient.Quantity;
                             if (!ingredientIcons.ContainsKey(prop.Name))
                             {
-                                ingredientIcons.Add(prop.Name,prop.Icon);
+                                GUIStyle guiStyle = new GUIStyle();
+                                guiStyle.normal.background = prop.Icon.texture;
+                                ingredientIcons.Add(prop.Name, guiStyle);
                             }
-
                         }
                         else
                         {
@@ -480,7 +480,7 @@ namespace RecipeListGui
         private static bool _hasSelectedProductRecipe;
         private static int _selectedProductRecipeIndex;
         private static ProductDefinition _lastSelectedBud;
-        private static Dictionary<string, Sprite> ingredientIcons = new();
+        private static Dictionary<string, GUIStyle> ingredientIcons = new();
 
         static void RecipePage(int windowId)
         {
@@ -567,10 +567,10 @@ namespace RecipeListGui
                         ingredientFromSplit = ingredientFromSplit.Trim();
                         
 
-                        Sprite icon = ingredientIcons.ContainsKey(ingredientFromSplit) ? ingredientIcons[ingredientFromSplit] : null;
+                        GUIStyle icon = ingredientIcons.ContainsKey(ingredientFromSplit) ? ingredientIcons[ingredientFromSplit] : null;
                         if (icon != null)
                         {
-                            GUI.DrawTexture(new Rect(8, 40 + (20 * i), 35, 22), icon.texture);
+                            GUI.Box(new Rect(8, 40 + (20 * i), 35, 22), GUIContent.none, icon);
                         }
                     }
 
