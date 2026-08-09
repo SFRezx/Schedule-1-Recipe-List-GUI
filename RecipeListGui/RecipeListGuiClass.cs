@@ -5,7 +5,7 @@ using Il2CppScheduleOne.StationFramework;
 using MelonLoader;
 using UnityEngine;
 using MelonLoader.Utils;
-[assembly: MelonInfo(typeof(RecipeListGui.RecipeListGuiClass), "Recipe List", "1.1.5", "Rezx, Community Updates By: ispa (Translation), pyst4r (effect colors)")]
+[assembly: MelonInfo(typeof(RecipeListGui.RecipeListGuiClass), "Recipe List", "1.1.6", "Rezx, Community Updates By: ispa (Translation), pyst4r (effect colors)")]
 
 namespace RecipeListGui
 {
@@ -598,8 +598,8 @@ namespace RecipeListGui
         private static bool _sortProductListPageByIngredientCount = false;
         private static List<DetailedProduct> _detailedListOfCreatedProducts = new();
         private static bool _shouldShowDetailedView = false;
+        static string _productListPageSearch = "";
 
-        
         static void ProductListPage(int windowID)
         {
 
@@ -675,6 +675,7 @@ namespace RecipeListGui
                     _hasSelectedProductType = false;
                     _typeOfDrugToFilter = "";
                     _productListPageScrollViewVector = Vector2.zero;
+                    _productListPageSearch = "";
                     _productListPageRect = new Rect(_productListPageRect.x, _productListPageRect.y, 295, 300);
 
                 }
@@ -699,6 +700,21 @@ namespace RecipeListGui
                     {
                         _productListPageRect = new Rect(_productListPageRect.x, _productListPageRect.y, 295, 300);
                     }
+                }
+
+                // search box
+                string newProductSearch = DrawManualTextField(new Rect(10, 20, 220, 22), _productListPageSearch ?? "", "ProductListSearch"); // newProductSearch stuff was created with ai because imgui textfield doesnt seem work and im lazy
+                if (newProductSearch != _productListPageSearch)
+                {
+                    _productListPageSearch = newProductSearch;
+                    _productListPageScrollViewVector = Vector2.zero;
+                }
+                if (!string.IsNullOrEmpty(_productListPageSearch) &&
+                    GUI.Button(new Rect(235, 20, 20, 22), "X"))
+                {
+                    _productListPageSearch = "";
+                    _productListPageScrollViewVector = Vector2.zero;
+                    _focusedTextFieldId = null;
                 }
                 
             }
@@ -726,6 +742,12 @@ namespace RecipeListGui
                 {
                     sortedProducts = sortedProducts.Where(bs => bs.Product.DrugType.ToString() == _typeOfDrugToFilter).ToList();
                 }
+                if (!string.IsNullOrEmpty(_productListPageSearch))
+                {
+                    sortedProducts = sortedProducts
+                        .Where(bs => Translate(bs.Product.Name).IndexOf(_productListPageSearch, System.StringComparison.OrdinalIgnoreCase) >= 0)
+                        .ToList();
+                }
                 if (GUI.Button(new Rect(_productListPageRect.width - 37, 110, 29, 27), _sortProductListPageByIngredientCount ? "<b><color=#3ebf05>I</color></b>" : "I"))
                 {
                     _sortProductListPageByPrice = false;
@@ -742,7 +764,7 @@ namespace RecipeListGui
                     sortedProducts = sortedProducts.OrderByDescending(bs => bs.Product.MarketValue - bs.CostToMake).ToList();
                 }
                 
-                _productListPageScrollViewVector = GUI.BeginScrollView(new Rect(10, 20, 420, 300), _productListPageScrollViewVector, new Rect(0, 0, 300, sortedProducts.Count * 20 + 20));
+                _productListPageScrollViewVector = GUI.BeginScrollView(new Rect(10, 46, 420, 274), _productListPageScrollViewVector, new Rect(0, 0, 300, sortedProducts.Count * 20 + 20));
 
                 foreach (var detailedProduct in sortedProducts)
                 {
@@ -769,13 +791,19 @@ namespace RecipeListGui
                 {
                     sortedProducts = sortedProducts.Where(product => product.DrugType.ToString() == _typeOfDrugToFilter).ToList();
                 }
+                if (!string.IsNullOrEmpty(_productListPageSearch))
+                {
+                    sortedProducts = sortedProducts
+                        .Where(product => Translate(product.name).IndexOf(_productListPageSearch, System.StringComparison.OrdinalIgnoreCase) >= 0)
+                        .ToList();
+                }
 
 
                 if (_sortProductListPageByPrice)
                 {
                     sortedProducts = sortedProducts.OrderByDescending(product => product.MarketValue).ToList();
                 }
-                _productListPageScrollViewVector = GUI.BeginScrollView(new Rect(55, 20, 420, 300), _productListPageScrollViewVector, new Rect(0, 0, 300, sortedProducts.Count * 20 + 20));
+                _productListPageScrollViewVector = GUI.BeginScrollView(new Rect(55, 46, 420, 274), _productListPageScrollViewVector, new Rect(0, 0, 300, sortedProducts.Count * 20 + 20));
 
                 // i should probably not render buttons that are offscreen or do a page system but 2 brain cells
                 foreach (var createdProduct in sortedProducts)
@@ -884,13 +912,60 @@ namespace RecipeListGui
                 }
             }
         }
+        
+        
+        // DrawManualTextField was created with ai because imgui textfield doesnt seem work and im lazy
+        static string _focusedTextFieldId = null;
+        static string DrawManualTextField(Rect rect, string text, string controlId)
+        {
+            GUI.Box(rect, "");
 
+            Event e = Event.current;
+            if (e.type == EventType.MouseDown)
+            {
+                if (rect.Contains(e.mousePosition))
+                    _focusedTextFieldId = controlId;
+                else if (_focusedTextFieldId == controlId)
+                    _focusedTextFieldId = null;
+            }
+
+            bool isFocused = _focusedTextFieldId == controlId;
+
+            if (isFocused && e.type == EventType.KeyDown)
+            {
+                if (e.keyCode == KeyCode.Backspace)
+                {
+                    if (text.Length > 0)
+                        text = text.Substring(0, text.Length - 1);
+                    e.Use();
+                }
+                else if (e.keyCode == KeyCode.Return || e.keyCode == KeyCode.Escape)
+                {
+                    _focusedTextFieldId = null;
+                    e.Use();
+                }
+                else if (!char.IsControl(e.character))
+                {
+                    text += e.character;
+                    e.Use();
+                }
+            }
+
+            string display = text;
+            if (isFocused && (Time.realtimeSinceStartup % 1f) < 0.5f)
+                display += "|";
+
+            GUI.Label(new Rect(rect.x + 4, rect.y + 2, rect.width - 8, rect.height - 4), display);
+
+            return text;
+        }
         
         private static Vector2 _favsListPageScrollViewVector = Vector2.zero;
         private static Rect _favsListPageRect = new Rect(100, 325, 300, 55);
         private static Il2CppSystem.Collections.Generic.List<ProductDefinition>? _listOf_FavsProducts;
         private static bool _shouldMinimizeFavListPage = true;
         private static bool _sortFavListPageByPrice = false;
+        static string _favsListPageSearch = "";
 
         static void FavListPage(int windowID)
         {
@@ -925,6 +1000,20 @@ namespace RecipeListGui
                 _favsListPageScrollViewVector = Vector2.zero;
             }
             
+            string newSearch = DrawManualTextField(new Rect(10, 20, 220, 22), _favsListPageSearch ?? "", "FavListSearch"); // FavListSearch related stuff was created with ai because imgui textfield doesnt seem work and im lazy            
+            if (newSearch != _favsListPageSearch)
+            {
+                _favsListPageSearch = newSearch;
+                _favsListPageScrollViewVector = Vector2.zero;
+            }
+            if (!string.IsNullOrEmpty(_favsListPageSearch) &&
+                GUI.Button(new Rect(235, 20, 20, 22), "X"))
+            {
+                _favsListPageSearch = "";
+                _favsListPageScrollViewVector = Vector2.zero;
+                GUI.FocusControl("FavListSearchField");
+            }
+
             _listOf_FavsProducts ??= GetlistOf_FavProducts();
             if (_listOf_FavsProducts == null)
             {
@@ -932,15 +1021,23 @@ namespace RecipeListGui
                 return;
             }
 
-            
+
             var filteredFavProducts = _listOf_FavsProducts.ToArray().ToList();
-            
+
+            if (!string.IsNullOrEmpty(_favsListPageSearch))
+            {
+                filteredFavProducts = filteredFavProducts
+                    .Where(product => Translate(product.name)
+                        .IndexOf(_favsListPageSearch, System.StringComparison.OrdinalIgnoreCase) >= 0)
+                    .ToList();
+            }
+
             if (_sortFavListPageByPrice)
             {
                 filteredFavProducts = filteredFavProducts.OrderByDescending(product => product.MarketValue).ToList();
             }
 
-            _favsListPageScrollViewVector = GUI.BeginScrollView(new Rect(10, 20, 300, 300), _favsListPageScrollViewVector, new Rect(0, 0, 300, filteredFavProducts.Count * 20 + 10));
+            _favsListPageScrollViewVector = GUI.BeginScrollView(new Rect(10, 46, 300, 274), _favsListPageScrollViewVector, new Rect(0, 0, 300, filteredFavProducts.Count * 20 + 10));
 
             int spacer = 0;
             foreach (var favProduct in filteredFavProducts)
